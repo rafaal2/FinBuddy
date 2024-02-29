@@ -9,7 +9,11 @@
 </head>
 <body>
 <h1>Controle financas</h1>
-<div class="calendar">
+<div class="login-container">
+    <input type="text" id="username" placeholder="Nome de usuário">
+    <button id="login-button">Entrar</button>
+</div>
+<div class="calendar hidden">
     <header>
         <h3></h3>
         <nav>
@@ -30,7 +34,7 @@
         <ul class="dates"></ul>
     </section>
 </div>
-<div class="top-right">
+<div class="top-right hidden">
     <span>Nome: Rafael</span>
     <br>
     <span>saldo mensal: $1200</span>
@@ -40,7 +44,7 @@
     <button>config</button>
 </div>
 
-<div class="options">
+<div class="options hidden">
     <button id="add-expense">Adicionar nova despesa</button>
     <br>
     <button id="remove-expense">Remover despesa</button>

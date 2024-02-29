@@ -72,6 +72,14 @@ navs.forEach((nav) => {
     renderCalendar();
   });
 });
-
 renderCalendar();
 //-----------------------------------------------------------------------------------------------------------------------------
+ const loginContainer = document.querySelector('.login-container');
+    const otherElements = document.querySelectorAll('.calendar, .top-right, .options');
+
+    document.getElementById('login-button').addEventListener('click', function() {
+        loginContainer.classList.add('hidden');
+        otherElements.forEach(function(element) {
+            element.classList.remove('hidden');
+        });
+    });

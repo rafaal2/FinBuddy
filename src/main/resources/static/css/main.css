@@ -120,6 +120,9 @@ h3 {
     border-radius: 5px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
+.hidden {
+    display: none;
+}
 .options button {
     background-color: #9932CC;
     color: #fff;
@@ -146,5 +149,38 @@ h3 {
 }
 
 .options button:hover {
+    background-color: #7b297d;
+}
+.login-container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #ffffff;
+    padding: 1rem;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+.login-container input {
+    width: 100%;
+    padding: 0.5rem;
+    margin-bottom: 0.5rem;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+}
+
+.login-container button {
+    background-color: #9932CC;
+    color: #fff;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.login-container button:hover {
     background-color: #7b297d;
 }

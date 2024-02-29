@@ -21,10 +21,16 @@ public class ExpenseController {
     public List<Expense> findAll() {
         return expenseService.findAll();
     }
+//    @CrossOrigin
+//    @GetMapping(value = "/{id}", produces = {MediaType.APPLICATION_JSON_VALUE})
+//    public ResponseEntity<?> addExpense(@PathVariable(value = "id") Long id) {
+//        User updatedUser = expenseService.add(id);
+//        return ResponseEntity.ok(updatedUser);
+//    }
     @CrossOrigin
     @GetMapping(value = "/{id}", produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<?> addExpense(@PathVariable(value = "id") Long id) {
-        User updatedUser = expenseService.add(id);
-        return ResponseEntity.ok(updatedUser);
+    public ResponseEntity<?> findByName(@PathVariable(value = "id") Long id) {
+        List<Expense> User = expenseService.findByPerson(id);
+        return ResponseEntity.ok(User);
     }
 }
