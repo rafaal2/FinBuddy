@@ -26,4 +26,6 @@ public class User implements Serializable {
     private String name;
     @Column(name = "balance", nullable = false, length = 80)
     private double balance;
+    @Column(name = "Month_balance", nullable = false, length = 80)
+    private double monthBalance;
 }

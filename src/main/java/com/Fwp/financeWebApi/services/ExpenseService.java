@@ -41,4 +41,10 @@ public class ExpenseService {
         return userRepostory.save(userEntity);
     }
 
+    public void delete(Long id){
+        var entity  = expenseRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("not found"));
+        expenseRepository.delete(entity);
+    }
+
+
 }
