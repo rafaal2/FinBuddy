@@ -81,6 +81,7 @@ renderCalendar();
      loginButton.addEventListener('click', function() {
          const userName = nomeInput.value;
          verify(userName);
+         displayInfo(userName)
      });
  });
 
@@ -100,4 +101,25 @@ renderCalendar();
              }
          })
          .catch(error => console.error('Erro na requisição:', error));
+ }
+
+
+ function displayInfo(name) {
+     console.log("getting user data:", name);
+     fetch(`http://localhost:8080/user/${name}`)
+         .then(response => response.json())
+         .then(user => {
+             const userDiv = document.createElement('div');
+             userDiv.innerHTML =
+             `Nome: ${user.name}
+             <br>
+             saldo mensal: ${user.monthBalance}
+             <br>
+             saldo restante: ${user.balance}`;
+             const topRightDiv = document.querySelector('.top-right');
+             const hiddenDiv = document.querySelector('.hidden');
+             topRightDiv.innerHTML = '';
+             topRightDiv.appendChild(userDiv);
+         })
+         .catch(error => console.error('Erro:', error));
  }
