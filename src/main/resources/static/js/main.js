@@ -73,13 +73,31 @@ navs.forEach((nav) => {
   });
 });
 renderCalendar();
-//-----------------------------------------------------------------------------------------------------------------------------
- const loginContainer = document.querySelector('.login-container');
-    const otherElements = document.querySelectorAll('.calendar, .top-right, .options');
 
-    document.getElementById('login-button').addEventListener('click', function() {
-        loginContainer.classList.add('hidden');
-        otherElements.forEach(function(element) {
-            element.classList.remove('hidden');
-        });
-    });
+ document.addEventListener('DOMContentLoaded', () => {
+     const loginButton = document.getElementById('login-button');
+     const nomeInput = document.getElementById('nome');
+
+     loginButton.addEventListener('click', function() {
+         const userName = nomeInput.value;
+         verify(userName);
+     });
+ });
+
+ function verify(name) {
+     fetch(`http://localhost:8080/user/exists/${name}`)
+         .then(response => response.json())
+         .then(data => {
+             if (data === true) {
+                 const loginContainer = document.querySelector('.login-container');
+                 const otherElements = document.querySelectorAll('.calendar, .top-right, .options');
+
+                 loginContainer.classList.add('hidden');
+                 otherElements.forEach(element => element.classList.remove('hidden'));
+                 console.log('login autorizado');
+             } else {
+                 console.error('usuario nao encontrado');
+             }
+         })
+         .catch(error => console.error('Erro na requisição:', error));
+ }

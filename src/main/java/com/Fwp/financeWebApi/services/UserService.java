@@ -1,14 +1,12 @@
 package com.Fwp.financeWebApi.services;
 
-import com.Fwp.financeWebApi.model.Expense;
 import com.Fwp.financeWebApi.model.User;
-import com.Fwp.financeWebApi.repositories.ExpenseRepository;
-import com.Fwp.financeWebApi.repositories.UserRepository;
 import com.Fwp.financeWebApi.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.logging.Logger;
 @Service
@@ -22,7 +20,13 @@ public class UserService {
         logger.info("finding all");
         return repository.findAll();
     }
-    public List<User> findByName(String name){
+    public Optional<User> findByName(String name){
+        logger.info("finding user");
         return repository.findByName(name);
     }
+    public boolean exists(String name) {
+    return repository.existsByName(name);
+    }
+
+
 }

@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/user")
@@ -25,7 +26,13 @@ public class UserController {
     @CrossOrigin
     @GetMapping(value = "/{name}", produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<?> findByName(@PathVariable(value = "name") String name) {
-        List<User> User = service.findByName(name);
+        Optional<User> User = service.findByName(name);
         return ResponseEntity.ok(User);
+    }
+
+    @GetMapping(value = "/exists/{name}", produces = {MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity<?> exists(@PathVariable(value = "name") String name) {
+        boolean exists = service.exists(name);
+        return ResponseEntity.ok(exists);
     }
 }
