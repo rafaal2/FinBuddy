@@ -1,7 +1,6 @@
 package com.Fwp.financeWebApi.repositories;
 
 import com.Fwp.financeWebApi.model.Expense;
-import com.Fwp.financeWebApi.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
