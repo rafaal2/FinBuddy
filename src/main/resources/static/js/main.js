@@ -49,6 +49,16 @@ function renderCalendar() {
 
   dates.innerHTML = datesHtml;
   header.textContent = `${months[month]} ${year}`;
+
+  const datesList = document.querySelectorAll('.dates li');
+  datesList.forEach(dateElement => {
+    dateElement.addEventListener('click', function() {
+      const selectedDate = this.textContent;
+      const currentMonth = month + 1;
+      const formattedDate = `${year}-${currentMonth < 10 ? '0' + currentMonth : currentMonth}-${selectedDate < 10 ? '0' + selectedDate : selectedDate}`;
+      console.log('Data selecionada:', formattedDate);
+    });
+  });
 }
 
 navs.forEach((nav) => {
@@ -73,6 +83,23 @@ navs.forEach((nav) => {
   });
 });
 renderCalendar();
+const datesList = document.querySelectorAll('.dates li');
+
+datesList.forEach(dateElement => {
+    dateElement.addEventListener('click', function() {
+        const selectedDate = this.textContent;
+        const currentMonth = month + 1;
+        const formattedDate = `${year}-${currentMonth < 10 ? '0' + currentMonth : currentMonth}-${selectedDate < 10 ? '0' + selectedDate : selectedDate}`;
+    });
+});
+document.addEventListener('DOMContentLoaded', () => {
+    const seeExp = document.getElementById('see-expense');
+    const seeDisplayDiv = document.querySelector('.see-display');
+
+    seeExp.addEventListener('click', function() {
+        seeDisplayDiv.classList.toggle('hidden');
+    });
+});
 
  document.addEventListener('DOMContentLoaded', () => {
      const loginButton = document.getElementById('login-button');
@@ -81,9 +108,22 @@ renderCalendar();
      loginButton.addEventListener('click', function() {
          const userName = nomeInput.value;
          verify(userName);
-         displayInfo(userName)
+         displaydata(userName)
      });
+     loginButton.addEventListener('click', function() {
+          const userName = nomeInput.value;
+          verify(userName);
+          displaydata(userName);
+          fetch(`http://localhost:8080/user/${userName}`)
+              .then(response => response.json())
+              .then(user => {
+                  const userId = user.id;
+                  displayExpenses(userId);
+              })
+              .catch(error => console.error('Erro:', error));
+      });
  });
+
 
  function verify(name) {
      fetch(`http://localhost:8080/user/exists/${name}`)
@@ -104,18 +144,18 @@ renderCalendar();
  }
 
 
- function displayInfo(name) {
+ function displaydata(name) {
      console.log("getting user data:", name);
      fetch(`http://localhost:8080/user/${name}`)
          .then(response => response.json())
          .then(user => {
              const userDiv = document.createElement('div');
              userDiv.innerHTML =
-             `Nome: ${user.name}
+             `Name: ${user.name}
              <br>
-             saldo mensal: ${user.monthBalance}
+             Month Balance: ${user.monthBalance}
              <br>
-             saldo restante: ${user.balance}`;
+             Balance: ${user.balance}`;
              const topRightDiv = document.querySelector('.top-right');
              const hiddenDiv = document.querySelector('.hidden');
              topRightDiv.innerHTML = '';
@@ -123,3 +163,26 @@ renderCalendar();
          })
          .catch(error => console.error('Erro:', error));
  }
+
+function displayExpenses(id) {
+    console.log("getting user expenses:", id);
+    fetch(`http://localhost:8080/expense/find/${id}`)
+        .then(response => response.json())
+        .then(expenses => {
+            const seeDisplayDiv = document.querySelector('.see-display');
+            seeDisplayDiv.innerHTML = '';
+
+            expenses.forEach(expense => {
+                const expenseDate = new Date(expense.date);
+                const formattedDate = `${('0' + expenseDate.getDate()).slice(-2)}/${('0' + (expenseDate.getMonth() + 1)).slice(-2)}/${expenseDate.getFullYear()}`;
+                const expenseDiv = document.createElement('div');
+                expenseDiv.innerHTML = `
+                    Name: ${expense.name} ||
+                    Price: ${expense.price} R$ ||
+                    Date: ${formattedDate}
+                `;
+                seeDisplayDiv.appendChild(expenseDiv);
+            });
+        })
+        .catch(error => console.error('Error:', error));
+}
