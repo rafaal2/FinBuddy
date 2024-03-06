@@ -100,6 +100,14 @@ document.addEventListener('DOMContentLoaded', () => {
         seeDisplayDiv.classList.toggle('hidden');
     });
 });
+document.addEventListener('DOMContentLoaded', () => {
+    const addExpenseButton = document.getElementById('add-expense');
+    const hiddenForm = document.querySelector('.hidden-Form');
+
+    addExpenseButton.addEventListener('click', function() {
+        hiddenForm.classList.toggle('hidden');
+    });
+});
 
  document.addEventListener('DOMContentLoaded', () => {
      const loginButton = document.getElementById('login-button');
@@ -131,9 +139,11 @@ document.addEventListener('DOMContentLoaded', () => {
          .then(data => {
              if (data === true) {
                  const loginContainer = document.querySelector('.login-container');
+                 const registerContainer = document.querySelector('.register-container');
                  const otherElements = document.querySelectorAll('.calendar, .top-right, .options');
 
                  loginContainer.classList.add('hidden');
+                 registerContainer.classList.add('hidden');
                  otherElements.forEach(element => element.classList.remove('hidden'));
                  console.log('login autorizado');
              } else {

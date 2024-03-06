@@ -213,3 +213,15 @@ h3 {
     border-radius: 5px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
+.hidden-Form {
+    position: absolute;
+    background-color: #fff;
+    top:11.3rem;
+    left: 63rem;
+    width: 200px;
+    height: 175px;
+    margin: 10px;
+    padding: 5px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
