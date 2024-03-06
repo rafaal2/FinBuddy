@@ -153,9 +153,9 @@ document.addEventListener('DOMContentLoaded', () => {
              userDiv.innerHTML =
              `Name: ${user.name}
              <br>
-             Month Balance: ${user.monthBalance}
+             Month Balance: ${user.monthBalance}R$
              <br>
-             Balance: ${user.balance}`;
+             Balance: ${user.balance}R$`;
              const topRightDiv = document.querySelector('.top-right');
              const hiddenDiv = document.querySelector('.hidden');
              topRightDiv.innerHTML = '';
