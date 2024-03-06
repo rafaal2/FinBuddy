@@ -1,3 +1,5 @@
+let currentUser = null;
+let selectedFormattedDate = null;
 const header = document.querySelector(".calendar h3");
 const dates = document.querySelector(".dates");
 const navs = document.querySelectorAll("#prev, #next");
@@ -52,12 +54,12 @@ function renderCalendar() {
 
   const datesList = document.querySelectorAll('.dates li');
   datesList.forEach(dateElement => {
-    dateElement.addEventListener('click', function() {
-      const selectedDate = this.textContent;
-      const currentMonth = month + 1;
-      const formattedDate = `${year}-${currentMonth < 10 ? '0' + currentMonth : currentMonth}-${selectedDate < 10 ? '0' + selectedDate : selectedDate}`;
-      console.log('Data selecionada:', formattedDate);
-    });
+      dateElement.addEventListener('click', function() {
+          const selectedDate = this.textContent;
+          const currentMonth = month + 1;
+          selectedFormattedDate = `${year}-${currentMonth < 10 ? '0' + currentMonth : currentMonth}-${selectedDate < 10 ? '0' + selectedDate : selectedDate}`;
+          console.log('Data selecionada:', selectedFormattedDate);
+      });
   });
 }
 
@@ -131,13 +133,32 @@ document.addEventListener('DOMContentLoaded', () => {
               .catch(error => console.error('Erro:', error));
       });
  });
-
+ document.addEventListener('DOMContentLoaded', () => {
+     const addButton = document.getElementById('add-button');
+     addButton.addEventListener('click', function() {
+         if (selectedFormattedDate && currentUser) {
+             const name = document.getElementById('name').value;
+             const price = document.getElementById('price').value;
+             addExpense(name, price, selectedFormattedDate, currentUser);
+         } else {
+             console.error('No date is selected or no user is logged in.');
+         }
+     });
+ });
 
  function verify(name) {
-     fetch(`http://localhost:8080/user/exists/${name}`)
+     return fetch(`http://localhost:8080/user/exists/${name}`)
          .then(response => response.json())
          .then(data => {
              if (data === true) {
+                 return fetch(`http://localhost:8080/user/${name}`)
+                     .then(response => response.json());
+             } else {
+                 throw new Error('User not found');
+             }
+         })
+         .then(user => {
+             if (user) {
                  const loginContainer = document.querySelector('.login-container');
                  const registerContainer = document.querySelector('.register-container');
                  const otherElements = document.querySelectorAll('.calendar, .top-right, .options');
@@ -145,33 +166,38 @@ document.addEventListener('DOMContentLoaded', () => {
                  loginContainer.classList.add('hidden');
                  registerContainer.classList.add('hidden');
                  otherElements.forEach(element => element.classList.remove('hidden'));
+
                  console.log('login autorizado');
-             } else {
-                 console.error('usuario nao encontrado');
              }
+             return user;
          })
-         .catch(error => console.error('Erro na requisição:', error));
+         .catch(error => {
+             console.error('Error:', error);
+             return null;
+         });
  }
 
 
  function displaydata(name) {
      console.log("getting user data:", name);
-     fetch(`http://localhost:8080/user/${name}`)
-         .then(response => response.json())
+     verify(name)
          .then(user => {
-             const userDiv = document.createElement('div');
-             userDiv.innerHTML =
-             `Name: ${user.name}
-             <br>
-             Month Balance: ${user.monthBalance}R$
-             <br>
-             Balance: ${user.balance}R$`;
-             const topRightDiv = document.querySelector('.top-right');
-             const hiddenDiv = document.querySelector('.hidden');
-             topRightDiv.innerHTML = '';
-             topRightDiv.appendChild(userDiv);
+             if (user) {
+                 const userDiv = document.createElement('div');
+                 userDiv.innerHTML =
+                     `Name: ${user.name}
+                      <br>
+                      Month Balance: ${user.monthBalance}R$
+                      <br>
+                      Balance: ${user.balance}R$`;
+                 const topRightDiv = document.querySelector('.top-right');
+                 const hiddenDiv = document.querySelector('.hidden');
+                 topRightDiv.innerHTML = '';
+                 topRightDiv.appendChild(userDiv);
+                 currentUser = user;
+             }
          })
-         .catch(error => console.error('Erro:', error));
+         .catch(error => console.error('Error:', error));
  }
 
 function displayExpenses(id) {
@@ -195,4 +221,34 @@ function displayExpenses(id) {
             });
         })
         .catch(error => console.error('Error:', error));
-}
+}function addExpense(name, price, date, user) {
+     const expenseInfo = {
+         name: name,
+         price: price,
+         date: date,
+         userId: {
+             name: user.name,
+             balance: user.balance,
+             monthBalance: user.monthBalance,
+             id: user.id
+         }
+     };
+
+     fetch('http://localhost:8080/expense', {
+         method: 'POST',
+         headers: {
+             'Content-Type': 'application/json'
+         },
+         body: JSON.stringify(expenseInfo)
+     })
+         .then(response => {
+             if (response.ok) {
+                 console.log('Despesa adicionada com sucesso!');
+             } else {
+                 response.json().then(data => {
+                     console.error('Erro ao criar a despesa:', data);
+                 });
+             }
+         })
+         .catch(error => console.error('Erro:', error));
+ }

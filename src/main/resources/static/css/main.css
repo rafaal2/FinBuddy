@@ -206,7 +206,7 @@ h3 {
 }
 .see-display{
     position: absolute;
-    top:22rem;
+    top:23.5rem;
     left: 52.5rem;
     background-color: #ffffff;
     padding: 0.5rem 1rem;
@@ -224,4 +224,16 @@ h3 {
     padding: 5px;
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+.hidden-Form button {
+    background-color: #9932CC;
+    color: #fff;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+.hidden-Form button:hover {
+    background-color: #7b297d;
 }
