@@ -110,6 +110,19 @@ document.addEventListener('DOMContentLoaded', () => {
         hiddenForm.classList.toggle('hidden');
     });
 });
+ document.addEventListener('DOMContentLoaded', () => {
+     const adduserbtn = document.getElementById('add-userbtn');
+     const nameInput = document.getElementById('logname');
+     const monthBalanceInput = document.getElementById('monthbalance');
+     const balancenameInput = document.getElementById('balance');
+
+     adduserbtn.addEventListener('click', function() {
+         const nameInput = document.getElementById('logname');
+         const monthBalanceInput = document.getElementById('monthbalance');
+         const balanceInput = document.getElementById('balance');
+         adduser(nameInput, monthBalanceInput, balanceInput)
+     });});
+
 
  document.addEventListener('DOMContentLoaded', () => {
      const loginButton = document.getElementById('login-button');
@@ -251,4 +264,7 @@ function displayExpenses(id) {
              }
          })
          .catch(error => console.error('Erro:', error));
+ }
+
+ function adduser(name, monthBalance, balance){
  }

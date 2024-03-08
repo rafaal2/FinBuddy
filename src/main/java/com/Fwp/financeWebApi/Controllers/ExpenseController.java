@@ -41,7 +41,6 @@ public class ExpenseController {
             produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<?> create(@RequestBody Expense expense) {
         Expense savedExpense = expenseService.Create(expense);
-        User user = expense.getUserId();
         User updatedUser = expenseService.add(savedExpense.getId());
         return ResponseEntity.ok(updatedUser);
     }
