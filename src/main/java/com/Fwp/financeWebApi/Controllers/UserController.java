@@ -35,4 +35,11 @@ public class UserController {
         boolean exists = service.exists(name);
         return ResponseEntity.ok(exists);
     }
+
+    @PostMapping(
+            consumes = {MediaType.APPLICATION_JSON_VALUE},
+            produces = {MediaType.APPLICATION_JSON_VALUE})
+    public User create(@RequestBody User user) {
+        return service.create(user);
+    }
 }

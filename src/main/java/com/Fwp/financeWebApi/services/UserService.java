@@ -27,6 +27,8 @@ public class UserService {
     public boolean exists(String name) {
     return repository.existsByName(name);
     }
-
-
+    public User create (User user){
+        logger.info("creating one product");
+        return repository.save(user);
+    }
 }

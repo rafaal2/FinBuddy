@@ -112,14 +112,11 @@ document.addEventListener('DOMContentLoaded', () => {
 });
  document.addEventListener('DOMContentLoaded', () => {
      const adduserbtn = document.getElementById('add-userbtn');
-     const nameInput = document.getElementById('logname');
-     const monthBalanceInput = document.getElementById('monthbalance');
-     const balancenameInput = document.getElementById('balance');
 
      adduserbtn.addEventListener('click', function() {
-         const nameInput = document.getElementById('logname');
-         const monthBalanceInput = document.getElementById('monthbalance');
-         const balanceInput = document.getElementById('balance');
+         const nameInput = document.getElementById('logname').value;
+         const monthBalanceInput = document.getElementById('monthbalance').value;
+         const balanceInput = document.getElementById('balance').value;
          adduser(nameInput, monthBalanceInput, balanceInput)
      });});
 
@@ -267,4 +264,27 @@ function displayExpenses(id) {
  }
 
  function adduser(name, monthBalance, balance){
+ const userData = {
+         name: name,
+         monthBalance: monthBalance,
+         balance: balance
+     };
+
+     fetch('http://localhost:8080/user', {
+         method: 'POST',
+         headers: {
+             'Content-Type': 'application/json'
+         },
+         body: JSON.stringify(userData)
+     })
+     .then(response => {
+         if (response.ok) {
+             console.log('Produto criado com sucesso!');
+         } else {
+             console.error('Erro ao criar o produto:', response.statusText);
+         }
+     })
+     .catch(error => console.error('Erro:', error));
  }
+
+
