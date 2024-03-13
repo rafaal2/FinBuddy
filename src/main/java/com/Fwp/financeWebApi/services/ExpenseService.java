@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.logging.Logger;
 
@@ -47,6 +48,9 @@ public class ExpenseService {
     public List<Expense> findByPerson(Long id){
         return expenseRepository.findByPerson(id);
     }
-
+    public Optional<Expense> findByName(String name){
+        logger.info("finding user");
+        return expenseRepository.findByName(name);
+    }
 
 }

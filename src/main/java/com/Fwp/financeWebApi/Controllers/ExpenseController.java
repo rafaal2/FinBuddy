@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/expense")
@@ -44,4 +45,16 @@ public class ExpenseController {
         User updatedUser = expenseService.add(savedExpense.getId());
         return ResponseEntity.ok(updatedUser);
     }
+
+    @DeleteMapping(value = "/delete/{name}")
+    public ResponseEntity<?> deleteByName(@PathVariable(value = "name") String name) {
+        Optional<Expense> expense = expenseService.findByName(name);
+        if (expense.isPresent()) {
+            expenseService.delete(expense.get().getId());
+            return ResponseEntity.noContent().build();
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
 }

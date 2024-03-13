@@ -156,18 +156,23 @@ document.addEventListener('DOMContentLoaded', () => {
               .catch(error => console.error('Erro:', error));
       });
  });
- document.addEventListener('DOMContentLoaded', () => {
-     const addButton = document.getElementById('add-button');
-     addButton.addEventListener('click', function() {
-         if (selectedFormattedDate && currentUser) {
-             const name = document.getElementById('name').value;
-             const price = document.getElementById('price').value;
-             addExpense(name, price, selectedFormattedDate, currentUser);
-         } else {
-             console.error('No date is selected or no user is logged in.');
-         }
-     });
- });
+document.addEventListener('DOMContentLoaded', () => {
+    const addButton = document.getElementById('add-button');
+    addButton.addEventListener('click', function() {
+        if (selectedFormattedDate && currentUser) {
+            const name = document.getElementById('name').value;
+            const price = document.getElementById('price').value;
+            addExpense(name, price, selectedFormattedDate, currentUser)
+                .then(() => {
+                    displayExpenses(currentUser.id);
+                    displaydata(currentUser.name);
+                })
+                .catch(error => console.error('Erro:', error));
+        } else {
+            console.error('No date is selected or no user is logged in.');
+        }
+    });
+});
 
  function verify(name) {
      return fetch(`http://localhost:8080/user/exists/${name}`)
@@ -256,44 +261,44 @@ function displayExpenses(id) {
 }
 
 function addExpense(name, price, date, user) {
-  const expenseInfo = {
-    name: name,
-    price: price,
-    date: date,
-    userId: {
-      name: user.name,
-      balance: user.balance,
-      monthBalance: user.monthBalance,
-      id: user.id
-    }
-  };
+    const expenseInfo = {
+        name: name,
+        price: price,
+        date: date,
+        userId: {
+            name: user.name,
+            balance: user.balance,
+            monthBalance: user.monthBalance,
+            id: user.id
+        }
+    };
 
-  fetch('http://localhost:8080/expense', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(expenseInfo)
-  })
-  .then(response => {
-    if (response.ok) {
-      return fetch(`http://localhost:8080/user/${user.name}`);
-    } else {
-      response.json().then(data => {
-        console.error('Erro ao criar a despesa:', data);
-      });
-    }
-  })
-  .then(response => response.json())
-  .then(user => {
-    if (user) {
-      currentUser = user;
-      updateBalanceDisplay(currentUser.balance);
-      renderCalendar();
-      displayExpensesCalendar(currentUser.id);
-    }
-  })
-  .catch(error => console.error('Erro:', error));
+    return fetch('http://localhost:8080/expense', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(expenseInfo)
+    })
+    .then(response => {
+        if (!response.ok) {
+            return response.json().then(data => {
+                throw new Error('Erro ao criar a despesa: ' + data);
+            });
+        }
+    })
+    .then(() => {
+        return fetch(`http://localhost:8080/user/${user.name}`);
+    })
+    .then(response => response.json())
+    .then(user => {
+        if (user) {
+            currentUser = user;
+            updateBalanceDisplay(currentUser.balance);
+            renderCalendar();
+            displayExpensesCalendar(currentUser.id);
+        }
+    });
 }
 
 
@@ -387,6 +392,18 @@ function addExpense(name, price, date, user) {
      if (balanceDisplay) {
        balanceDisplay.textContent = `Balance: ${balance}R$`;
      }
+   }
+   function deleteExpenseByName(name) {
+       fetch(`http://localhost:8080/expense/delete/${name}`, {
+           method: 'DELETE'
+       })
+       .then(response => {
+           if (response.ok) {
+               console.log(`Despesa "${name}" deletada com sucesso.`);
+           } else {
+               console.error('Erro ao deletar despesa:', response.statusText);}
+       })
+       .catch(error => console.error('Erro:', error));
    }
 
 
