@@ -82,6 +82,7 @@ navs.forEach((nav) => {
     month = date.getMonth();
 
     renderCalendar();
+    displayExpensesCalendar(currentUser.id); // Adiciona essa linha para atualizar as despesas no calendário
   });
 });
 renderCalendar();
@@ -108,6 +109,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     addExpenseButton.addEventListener('click', function() {
         hiddenForm.classList.toggle('hidden');
+    });
+});
+document.addEventListener('DOMContentLoaded', () => {
+    const registerButton = document.getElementById('register-button');
+    const addUserForm = document.querySelector('.add-user');
+
+    registerButton.addEventListener('click', function() {
+        addUserForm.classList.remove('hidden');
     });
 });
  document.addEventListener('DOMContentLoaded', () => {
@@ -139,6 +148,7 @@ document.addEventListener('DOMContentLoaded', () => {
               .then(user => {
                   const userId = user.id;
                   displayExpenses(userId);
+                  displayExpensesCalendar(userId)
               })
               .catch(error => console.error('Erro:', error));
       });
@@ -263,28 +273,53 @@ function displayExpenses(id) {
          .catch(error => console.error('Erro:', error));
  }
 
- function adduser(name, monthBalance, balance){
- const userData = {
-         name: name,
-         monthBalance: monthBalance,
-         balance: balance
-     };
+ function adduser(name, monthBalance, balance) {
+      const userData = {
+          name: name,
+          monthBalance: monthBalance,
+          balance: balance
+      };
 
-     fetch('http://localhost:8080/user', {
-         method: 'POST',
-         headers: {
-             'Content-Type': 'application/json'
-         },
-         body: JSON.stringify(userData)
-     })
-     .then(response => {
-         if (response.ok) {
-             console.log('Produto criado com sucesso!');
-         } else {
-             console.error('Erro ao criar o produto:', response.statusText);
-         }
-     })
-     .catch(error => console.error('Erro:', error));
- }
+      fetch('http://localhost:8080/user', {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(userData)
+      })
+      .then(response => {
+          if (response.ok) {
+              console.log('Usuário criado com sucesso!');
+              document.querySelector('.add-user').classList.add('hidden');
+              document.querySelector('.success-message').classList.remove('hidden');
+              setTimeout(() => {
+                  document.querySelector('.success-message').classList.add('hidden');
+              }, 3000);
+          } else {
+              console.error('Erro ao criar o usuário:', response.statusText);
+          }
+      })
+      .catch(error => console.error('Erro:', error));
+  }
+  function displayExpensesCalendar(id) {
+      console.log("getting user expenses:", id);
+      fetch(`http://localhost:8080/expense/find/${id}`)
+          .then(response => response.json())
+          .then(expenses => {
+              expenses.forEach(expense => {
+                  const expenseDate = new Date(expense.date);
+                  const day = expenseDate.getDate();
+                  const datesList = document.querySelectorAll('.dates li');
+                  datesList.forEach(dateElement => {
+                      if (parseInt(dateElement.textContent) === day) {
+                          dateElement.classList.add('has-expense');
+                      }
+                  });
+              });
+          })
+          .catch(error => console.error('Error:', error));
+  }
+
+
 
 
