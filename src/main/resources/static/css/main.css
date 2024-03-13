@@ -211,14 +211,27 @@ h3 {
   cursor: pointer;
 }
 .see-display{
-    position: absolute;
-    top:23.5rem;
-    left: 52.5rem;
-    background-color: #ffffff;
-    padding: 0.5rem 1rem;
-    border-radius: 5px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+position: absolute;
+    top: 57%;
+    left: 61.5%;
+
 }
+
+.see-display th, .see-display td {
+    border: 1px solid #ddd;
+    padding: 3px;
+    text-align: left;
+    border-radius: 10px;
+    background-color: #9932CC;
+    color: white;
+}
+
+.see-display th {
+    background-color: #9932CC;
+    color: white;
+}
+
+.see-display tr:hover {background-color: #ddd;}
 .hidden-Form {
     position: absolute;
     background-color: #fff;
@@ -232,6 +245,9 @@ h3 {
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 .hidden-Form button {
+    position: absolute;
+    top:8.5rem;
+    left: 6rem;
     background-color: #9932CC;
     color: #fff;
     border: none;
@@ -280,4 +296,13 @@ h3 {
     background-color: #9932CC;
     border-radius: 60%;
     color: #fff;
+}
+.balloon {
+    position: absolute;
+    background-color: #9932CC;
+    color: #fff;
+    padding: 0.5rem;
+    border-radius: 20px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    z-index: 999;
 }

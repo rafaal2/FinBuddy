@@ -36,14 +36,14 @@ function renderCalendar() {
   }
 
   for (let i = 1; i <= endDate; i++) {
-    let className =
-      i === date.getDate() &&
-      month === new Date().getMonth() &&
-      year === new Date().getFullYear()
-        ? ' class="today"'
-        : "";
-    datesHtml += `<li${className}>${i}</li>`;
-  }
+      let className =
+        i === date.getDate() &&
+        month === new Date().getMonth() &&
+        year === new Date().getFullYear()
+          ? ' class="today"'
+          : "";
+      datesHtml += `<li${className}>${i}</li>`;
+    }
 
   for (let i = end; i < 6; i++) {
     datesHtml += `<li class="inactive">${i - end + 1}</li>`;
@@ -55,13 +55,14 @@ function renderCalendar() {
   const datesList = document.querySelectorAll('.dates li');
   datesList.forEach(dateElement => {
       dateElement.addEventListener('click', function() {
-          const selectedDate = this.textContent;
-          const currentMonth = month + 1;
-          selectedFormattedDate = `${year}-${currentMonth < 10 ? '0' + currentMonth : currentMonth}-${selectedDate < 10 ? '0' + selectedDate : selectedDate}`;
-          console.log('Data selecionada:', selectedFormattedDate);
+          const selectedDate = parseInt(this.textContent);
+          const formattedMonth = month < 9 ? '0' + (month + 1) : month + 1; // Corrigir índice do mês
+          const formattedDate = `${year}-${formattedMonth}-${selectedDate < 10 ? '0' + selectedDate : selectedDate}`;
+          selectedFormattedDate = formattedDate;
       });
   });
 }
+
 
 navs.forEach((nav) => {
   nav.addEventListener("click", (e) => {
@@ -188,8 +189,6 @@ document.addEventListener('DOMContentLoaded', () => {
                  loginContainer.classList.add('hidden');
                  registerContainer.classList.add('hidden');
                  otherElements.forEach(element => element.classList.remove('hidden'));
-
-                 console.log('login autorizado');
              }
              return user;
          })
@@ -201,7 +200,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
  function displaydata(name) {
-     console.log("getting user data:", name);
      verify(name)
          .then(user => {
              if (user) {
@@ -223,57 +221,81 @@ document.addEventListener('DOMContentLoaded', () => {
  }
 
 function displayExpenses(id) {
-    console.log("getting user expenses:", id);
     fetch(`http://localhost:8080/expense/find/${id}`)
         .then(response => response.json())
         .then(expenses => {
             const seeDisplayDiv = document.querySelector('.see-display');
             seeDisplayDiv.innerHTML = '';
 
+            const table = document.createElement('table');
+            table.innerHTML = `
+                <tr>
+                    <th>Name</th>
+                    <th>Price (R$)</th>
+                    <th>Date</th>
+                </tr>
+            `;
             expenses.forEach(expense => {
                 const expenseDate = new Date(expense.date);
-                const formattedDate = `${('0' + expenseDate.getDate()).slice(-2)}/${('0' + (expenseDate.getMonth() + 1)).slice(-2)}/${expenseDate.getFullYear()}`;
-                const expenseDiv = document.createElement('div');
-                expenseDiv.innerHTML = `
-                    Name: ${expense.name} ||
-                    Price: ${expense.price} R$ ||
-                    Date: ${formattedDate}
-                `;
-                seeDisplayDiv.appendChild(expenseDiv);
+                const currentMonth = month;
+                const currentYear = year;
+                if (expenseDate.getMonth() === currentMonth && expenseDate.getFullYear() === currentYear) {
+                    const formattedDate = `${('0' + (expenseDate.getDate() + 1)).slice(-2)}/${('0' + (expenseDate.getMonth() + 1)).slice(-2)}/${expenseDate.getFullYear()}`;
+                    const row = table.insertRow(-1);
+                    row.innerHTML = `
+                        <td>${expense.name}</td>
+                        <td>${expense.price}</td>
+                        <td>${formattedDate}</td>
+                    `;
+                }
             });
+
+            seeDisplayDiv.appendChild(table);
         })
         .catch(error => console.error('Error:', error));
-}function addExpense(name, price, date, user) {
-     const expenseInfo = {
-         name: name,
-         price: price,
-         date: date,
-         userId: {
-             name: user.name,
-             balance: user.balance,
-             monthBalance: user.monthBalance,
-             id: user.id
-         }
-     };
+}
 
-     fetch('http://localhost:8080/expense', {
-         method: 'POST',
-         headers: {
-             'Content-Type': 'application/json'
-         },
-         body: JSON.stringify(expenseInfo)
-     })
-         .then(response => {
-             if (response.ok) {
-                 console.log('Despesa adicionada com sucesso!');
-             } else {
-                 response.json().then(data => {
-                     console.error('Erro ao criar a despesa:', data);
-                 });
-             }
-         })
-         .catch(error => console.error('Erro:', error));
- }
+function addExpense(name, price, date, user) {
+  const expenseInfo = {
+    name: name,
+    price: price,
+    date: date,
+    userId: {
+      name: user.name,
+      balance: user.balance,
+      monthBalance: user.monthBalance,
+      id: user.id
+    }
+  };
+
+  fetch('http://localhost:8080/expense', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(expenseInfo)
+  })
+  .then(response => {
+    if (response.ok) {
+      return fetch(`http://localhost:8080/user/${user.name}`);
+    } else {
+      response.json().then(data => {
+        console.error('Erro ao criar a despesa:', data);
+      });
+    }
+  })
+  .then(response => response.json())
+  .then(user => {
+    if (user) {
+      currentUser = user;
+      updateBalanceDisplay(currentUser.balance);
+      renderCalendar();
+      displayExpensesCalendar(currentUser.id);
+    }
+  })
+  .catch(error => console.error('Erro:', error));
+}
+
 
  function adduser(name, monthBalance, balance) {
       const userData = {
@@ -291,7 +313,6 @@ function displayExpenses(id) {
       })
       .then(response => {
           if (response.ok) {
-              console.log('Usuário criado com sucesso!');
               document.querySelector('.add-user').classList.add('hidden');
               document.querySelector('.success-message').classList.remove('hidden');
               setTimeout(() => {
@@ -303,34 +324,70 @@ function displayExpenses(id) {
       })
       .catch(error => console.error('Erro:', error));
   }
-  function displayExpensesCalendar(id) {
-      console.log("getting user expenses:", id);
-      fetch(`http://localhost:8080/expense/find/${id}`)
-          .then(response => response.json())
-          .then(expenses => {
-              const datesList = document.querySelectorAll('.dates li');
-              datesList.forEach(dateElement => {
-                  dateElement.classList.remove('has-expense');
-              });
+ function displayExpensesCalendar(id) {
+     fetch(`http://localhost:8080/expense/find/${id}`)
+         .then(response => response.json())
+         .then(expenses => {
+             const datesList = document.querySelectorAll('.dates li');
+             datesList.forEach(dateElement => {
+                 dateElement.classList.remove('has-expense');
+             });
 
-              expenses.forEach(expense => {
-                  const expenseDate = new Date(expense.date);
-                  const day = expenseDate.getDate();
-                  const currentMonth = month;
-                  const currentYear = year;
-                  if (expenseDate.getMonth() === currentMonth && expenseDate.getFullYear() === currentYear) {
-                      const datesList = document.querySelectorAll('.dates li');
-                      datesList.forEach(dateElement => {
-                          if (parseInt(dateElement.textContent) === day && !dateElement.classList.contains('inactive')) {
-                              dateElement.classList.add('has-expense');
-                          }
-                      });
-                  }
-              });
-          })
-          .catch(error => console.error('Error:', error));
-  }
+             expenses.forEach(expense => {
+                 const expenseDate = new Date(expense.date);
+                 const day = expenseDate.getDate() + 1;
+                 const currentMonth = month;
+                 const currentYear = year;
+                 if (expenseDate.getMonth() === currentMonth && expenseDate.getFullYear() === currentYear) {
+                     const datesList = document.querySelectorAll('.dates li');
+                     datesList.forEach(dateElement => {
+                         if (parseInt(dateElement.textContent) === day && !dateElement.classList.contains('inactive')) {
+                             dateElement.classList.add('has-expense');
+                             dateElement.addEventListener('mouseenter', function() {
+                                 displayExpenseName(this, expense.name);
+                             });
 
+                             dateElement.addEventListener('mouseleave', function() {
+                                 removeExpenseName();
+                             });
+                         }
+                     });
+                 }
+             });
+         })
+         .catch(error => console.error('Error:', error));
+ }
+
+
+
+  function displayExpenseName(element, expenseName) {
+     const balloon = document.createElement('div');
+     balloon.classList.add('balloon');
+     balloon.textContent = expenseName;
+     const rect = element.getBoundingClientRect();
+     const xPos = rect.left + window.pageXOffset;
+     const yPos = rect.top + window.pageYOffset;
+     balloon.style.left = `${xPos}px`;
+     balloon.style.top = `${yPos - 30}px`;
+     document.body.appendChild(balloon);
+   }
+
+
+   function removeExpenseName() {
+
+     removeTimeout = setTimeout(() => {
+       const balloon = document.querySelector('.balloon');
+       if (balloon) {
+         balloon.remove();
+       }
+     });
+   }
+   function updateBalanceDisplay(balance) {
+     const balanceDisplay = document.getElementById('balance-display');
+     if (balanceDisplay) {
+       balanceDisplay.textContent = `Balance: ${balance}R$`;
+     }
+   }
 
 
 
