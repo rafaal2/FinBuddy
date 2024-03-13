@@ -82,7 +82,7 @@ navs.forEach((nav) => {
     month = date.getMonth();
 
     renderCalendar();
-    displayExpensesCalendar(currentUser.id); // Adiciona essa linha para atualizar as despesas no calendário
+    displayExpensesCalendar(currentUser.id);
   });
 });
 renderCalendar();
@@ -109,6 +109,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     addExpenseButton.addEventListener('click', function() {
         hiddenForm.classList.toggle('hidden');
+        renderCalendar();
+        displayExpensesCalendar(currentUser.id);
     });
 });
 document.addEventListener('DOMContentLoaded', () => {
@@ -306,19 +308,29 @@ function displayExpenses(id) {
       fetch(`http://localhost:8080/expense/find/${id}`)
           .then(response => response.json())
           .then(expenses => {
+              const datesList = document.querySelectorAll('.dates li');
+              datesList.forEach(dateElement => {
+                  dateElement.classList.remove('has-expense');
+              });
+
               expenses.forEach(expense => {
                   const expenseDate = new Date(expense.date);
                   const day = expenseDate.getDate();
-                  const datesList = document.querySelectorAll('.dates li');
-                  datesList.forEach(dateElement => {
-                      if (parseInt(dateElement.textContent) === day) {
-                          dateElement.classList.add('has-expense');
-                      }
-                  });
+                  const currentMonth = month;
+                  const currentYear = year;
+                  if (expenseDate.getMonth() === currentMonth && expenseDate.getFullYear() === currentYear) {
+                      const datesList = document.querySelectorAll('.dates li');
+                      datesList.forEach(dateElement => {
+                          if (parseInt(dateElement.textContent) === day && !dateElement.classList.contains('inactive')) {
+                              dateElement.classList.add('has-expense');
+                          }
+                      });
+                  }
               });
           })
           .catch(error => console.error('Error:', error));
   }
+
 
 
 
