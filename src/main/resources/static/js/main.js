@@ -132,6 +132,22 @@ document.addEventListener('DOMContentLoaded', () => {
          adduser(nameInput, monthBalanceInput, balanceInput)
      });});
 
+     document.addEventListener('DOMContentLoaded', () => {
+         const removeExpenseButton = document.getElementById('remove-expense');
+         const deleteExpenseForm = document.querySelector('.delete-expense');
+
+         removeExpenseButton.addEventListener('click', function() {
+             deleteExpenseForm.classList.toggle('hidden');
+         });
+
+         const deleteButton = document.getElementById('delete-button');
+         deleteButton.addEventListener('click', function() {
+             const expenseName = document.getElementById('nameDel').value;
+             deleteExpenseByName(expenseName);
+             deleteExpenseForm.classList.add('hidden');
+         });
+     });
+
 
  document.addEventListener('DOMContentLoaded', () => {
      const loginButton = document.getElementById('login-button');
@@ -160,12 +176,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const addButton = document.getElementById('add-button');
     addButton.addEventListener('click', function() {
         if (selectedFormattedDate && currentUser) {
+            const addUserForm = document.querySelector('.hidden-Form');
             const name = document.getElementById('name').value;
             const price = document.getElementById('price').value;
             addExpense(name, price, selectedFormattedDate, currentUser)
                 .then(() => {
                     displayExpenses(currentUser.id);
                     displaydata(currentUser.name);
+                    addUserForm.classList.add('hidden');
                 })
                 .catch(error => console.error('Erro:', error));
         } else {
@@ -242,24 +260,19 @@ function displayExpenses(id) {
             `;
             expenses.forEach(expense => {
                 const expenseDate = new Date(expense.date);
-                const currentMonth = month;
-                const currentYear = year;
-                if (expenseDate.getMonth() === currentMonth && expenseDate.getFullYear() === currentYear) {
-                    const formattedDate = `${('0' + (expenseDate.getDate() + 1)).slice(-2)}/${('0' + (expenseDate.getMonth() + 1)).slice(-2)}/${expenseDate.getFullYear()}`;
-                    const row = table.insertRow(-1);
-                    row.innerHTML = `
-                        <td>${expense.name}</td>
-                        <td>${expense.price}</td>
-                        <td>${formattedDate}</td>
-                    `;
-                }
+                const formattedDate = `${('0' + (expenseDate.getDate() + 1)).slice(-2)}/${('0' + (expenseDate.getMonth() + 1)).slice(-2)}/${expenseDate.getFullYear()}`;
+                const row = table.insertRow(-1);
+                row.innerHTML = `
+                    <td>${expense.name}</td>
+                    <td>${expense.price}</td>
+                    <td>${formattedDate}</td>
+                `;
             });
 
             seeDisplayDiv.appendChild(table);
         })
         .catch(error => console.error('Error:', error));
 }
-
 function addExpense(name, price, date, user) {
     const expenseInfo = {
         name: name,
@@ -400,8 +413,12 @@ function addExpense(name, price, date, user) {
        .then(response => {
            if (response.ok) {
                console.log(`Despesa "${name}" deletada com sucesso.`);
+               renderCalendar();
+               displayExpensesCalendar(currentUser.id);
+               displayExpenses(currentUser.id);
            } else {
-               console.error('Erro ao deletar despesa:', response.statusText);}
+               console.error('Erro ao deletar despesa:', response.statusText);
+           }
        })
        .catch(error => console.error('Erro:', error));
    }
