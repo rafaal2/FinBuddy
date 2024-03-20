@@ -420,7 +420,7 @@ function addExpense(name, price, date, user) {
                console.error('Erro ao deletar despesa:', response.statusText);
            }
        })
-       .catch(error => console.error('Erro:', error));
+       .catch(error => console.error('Error:', error));
    }
 
 
