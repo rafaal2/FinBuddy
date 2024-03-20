@@ -412,7 +412,7 @@ function addExpense(name, price, date, user) {
        })
        .then(response => {
            if (response.ok) {
-               console.log(`Despesa "${name}" deletada com sucesso.`);
+
                renderCalendar();
                displayExpensesCalendar(currentUser.id);
                displayExpenses(currentUser.id);
